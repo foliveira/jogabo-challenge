@@ -188,7 +188,6 @@ define(function(require, exports, module) {
 
         var hoursModifier = new StateModifier({
             align: [0, 0.05],
-            //origin: [0, 0.3],
             transform: Transform.translate(0, 120, 0)
         });
 
