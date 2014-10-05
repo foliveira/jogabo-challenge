@@ -178,8 +178,7 @@ define(function(require, exports, module) {
 
         })
         var dateModifier = new StateModifier({
-            align: [0, 0.05],
-            //transform: Transform.translate(0, -5, 0)
+            align: [0, 0.05]
         });
 
         var detailsModifier = new StateModifier({
