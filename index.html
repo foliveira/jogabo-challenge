@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Jogabo Challenge App</title>
+        <meta name="viewport" content="width=device-width, maximum-scale=1, user-scalable=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+        <!-- module loader -->
+        <script type="text/javascript" src="http://code.famo.us/lib/require.js"></script>
+
+        <!-- famous -->
+        <link rel="stylesheet" type="text/css" href="http://code.famo.us/famous/0.2/famous.css" />
+        <script type="text/javascript" src="http://code.famo.us/famous/0.2/famous.min.js"></script>
+
+        <!-- moment.js -->
+        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment.min.js"></script>
+
+        <!-- app code -->
+        <link rel="stylesheet" type="text/css" href="css/app.css" />
+        <script type="text/javascript">
+            require.config({
+                baseUrl: './src/'
+            });
+            require(['main']);
+        </script>
+    </head>
+    <body></body>
+</html>
