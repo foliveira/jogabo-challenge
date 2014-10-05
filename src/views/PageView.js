@@ -29,7 +29,10 @@ define(function(require, exports, module) {
 
     function _createLayout() {
       this.layout = new HeaderFooter({
-        headerSize: this.options.headerSize
+        headerSize: this.options.headerSize,
+            properties: {
+                backgroundColor: '#20202a'
+            }
       });
 
       var layoutModifier = new StateModifier({
@@ -40,26 +43,27 @@ define(function(require, exports, module) {
     }
 
     function _createHeader() {
-          var backgroundSurface = new Surface({
-              properties: {
-                  backgroundColor: '#20202a'
-              }
-          });
+        var backgroundSurface = new Surface({
+            properties: {
+                backgroundColor: '#20202a'
+            }
+        });
 
-          var backgroundModifier = new StateModifier({
-              transform: Transform.behind
-          });
+        var backgroundModifier = new StateModifier({
+            transform: Transform.behind
+        });
 
-
-        var arrowSurface = new ImageSurface({
+        var arrowSurface = new Surface({
             size: [44, 44],
-            conten: '',
-            classes: ["arrow-left-ico"]
+            classes: ['arrow-left-ico'],
+            properties: {
+              color: '#fff'
+            }
         });
 
         var titleSurface = new Surface({
             size: [88, 44],
-            content: 'Date & Time',
+            content: '<h4>Date & Time</h4>',
             properties: {
               color: '#cff700'
             }
@@ -85,7 +89,8 @@ define(function(require, exports, module) {
 
         var saveModifier = new StateModifier({
             origin: [1, 0.5],
-            align : [1, 0.5]
+            align : [1, 0.5],
+            transform: Transform.translate(0, 20, 0)
         });
 
       this.layout.header.add(backgroundModifier).add(backgroundSurface);
@@ -95,9 +100,11 @@ define(function(require, exports, module) {
     }
 
     function _createBody() {
+
+
         this.monthDetail = new Surface({
-          content: "Oct, 14",
-          size: [undefined, 20],
+          content: "<h4>Oct, 14</h4>",
+          size: [undefined, 0],
           properties: {
             backgroundColor: "#20202a",
             color: '#fff'
@@ -125,25 +132,46 @@ define(function(require, exports, module) {
                  content: (i + 1),
                  size: [undefined, 50],
                  properties: {
-                     backgroundColor: "hsl(" + (i * 360 / 3) + ", 100%, 50%)",
-                     textAlign: "center"
+                     backgroundColor: "#20202a",
+                     textAlign: "center",
+                     color: '#fff'
                  }
             });
 
             surfaces.push(item);
         }
 
-        this.gameDetails = new Surface({
-          content: 'Game detail',
+        this.gameDayDetails = new Surface({
+          content: moment().format("dddd MMMM Do"),
+          size : [undefined, 78],
+          properties: {
+            backgroundColor: '#20202a',
+            color: '#cff700',
+            textAlign: 'center'
+          },
+        });
+        this.gameHourDetails = new Surface({
+          content: moment().format("hh:mm A"),
           size : [undefined, 78],
           properties: {
             backgroundColor: "#20202a",
-            color: '#fff'
+            color: '#cff700',
+            textAlign: "center"
           },
         });
+        var gameDayDetailsModifier = new StateModifier({
+          transform: Transform.translate(0, 10, 0)
+        })
+
+        var gameHourDetailsModifier = new StateModifier({
+          transform: Transform.translate(0, 35, 0)
+        })
+        this.gameDetails = new RenderNode();
+        this.gameDetails.add(gameDayDetailsModifier).add(this.gameDayDetails);
+        this.gameDetails.add(gameHourDetailsModifier).add(this.gameHourDetails);
 
         this.hoursScroll = new ScrollContainer({
-            size : [undefined, 374],
+            size : [undefined, 370],
             properties: {
               backgroundColor: "#fff"
             },
@@ -165,16 +193,27 @@ define(function(require, exports, module) {
                  content: __getHours(i),
                  size: [undefined, 40],
                  properties: {
-                     backgroundColor: "hsl(" + (i * 360 / 48) + ", 100%, 50%)",
+                     backgroundColor: "#fff",
                      textAlign: "left"
                  }
             });
+            var self = this;
+            var lastSelected = null;
+            item.on('click', function() {
+                self.gameHourDetails.setContent(this.content);
+                this.addClass('selected-hour');
+                if(lastSelected)
+                  lastSelected.removeClass('selected-hour');
+                lastSelected = this;
+            });
+
+            item.pipe(this.hoursScroll);
 
             hours.push(item);
         }
 
         var monthDetailModifier = new StateModifier({
-          align: [0, 0.01],
+          transform: Transform.translate(0, -15, 0)
 
         })
         var dateModifier = new StateModifier({
