@@ -15,6 +15,18 @@ define(function(require, exports, module) {
 /* eslint-enable no-unused-vars */
     var Utility = require('famous/utilities/Utility');
 
+    var MouseSync     = require('famous/inputs/MouseSync');
+    var TouchSync     = require('famous/inputs/TouchSync');
+    var ScrollSync    = require('famous/inputs/ScrollSync');
+    var GenericSync   = require('famous/inputs/GenericSync');
+
+    // register any necessary Syncs globally by {SYNC_ID : SYNC_CLASS}
+    GenericSync.register({
+        'mouse'  : MouseSync,
+        'touch'  : TouchSync,
+        'scroll' : ScrollSync
+    });
+
     var moment = require('moment');
 
     function _createLayout() {
@@ -83,6 +95,17 @@ define(function(require, exports, module) {
     }
 
     function _createBody() {
+        var self = this;
+
+        // create a sync from the registered SYNC_IDs
+        // here we define default options for `mouse` and `touch` while
+        // scrolling sensitivity is scaled down
+        var sync = new GenericSync({
+            'mouse'  : {},
+            'touch'  : {},
+            'scroll' : {scale : .5}
+        });
+
         this.monthDetail = new Surface({
           content: '<b>Oct 14</b>',
           size: [undefined, 20],
@@ -103,10 +126,11 @@ define(function(require, exports, module) {
               direction: Utility.Direction.X
             }
         });
+
         var surfaces = [];
         this.dateScroll.sequenceFrom(surfaces);
+        this.dateScroll.pipe(sync);
 
-        var self = this;
         function __createItem(i) {
             var node = new RenderNode();
             for (var j = 0; j < 7; ++j) {
@@ -114,7 +138,7 @@ define(function(require, exports, module) {
                     transform: Transform.translate(j * (320 / 7), 0, 0)
                 });
                 node.add(modifier).add(new Surface({
-                    content: (j + 1) * i,
+                    content: (j * i) * (j + i),
                     size: [10, 50],
                     properties: {
                         backgroundColor: self.options.backgroundColor,
