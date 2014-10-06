@@ -103,6 +103,7 @@ define(function(require, exports, module) {
         this.monthDetail = new Surface({
           content: "<b>Oct 14</b>",
           size: [undefined, 20],
+          classes: ['month'],
           properties: {
             backgroundColor: this.options.backgroundColor
           }
@@ -177,7 +178,7 @@ define(function(require, exports, module) {
         this.gameDetails.add(gameHourDetailsModifier).add(this.gameHourDetails);
 
         this.hoursScroll = new ScrollContainer({
-            size : [true, true],
+            size : [undefined, true],
             scrollview: {
               direction: Utility.Direction.Y
             }
@@ -197,6 +198,7 @@ define(function(require, exports, module) {
             item = new Surface({
                 content: __getHours(i),
                 size: [undefined, 40],
+                classes: ['hour'],
                 properties: {
                     color: 'black',
                     backgroundColor: 'white',
@@ -204,7 +206,7 @@ define(function(require, exports, module) {
                 }
             });
             if(!lastSelected && moment().hour(Math.floor(i/2))
-                            .minute(i*30%60).diff(moment().format()) > 0)
+                            .minute(i*30%60).diff(moment().hours(23).format()) > 0)
                             {
                                 lastSelected = item;
                                 startIdx = (function() { return i; })();
@@ -213,9 +215,9 @@ define(function(require, exports, module) {
             var self = this;
             item.on('click', function() {
                 self.gameHourDetails.setContent(this.content);
-                this.addClass('selected-hour');
+                this.addClass('selected');
                 if(lastSelected)
-                  lastSelected.removeClass('selected-hour');
+                  lastSelected.removeClass('selected');
                 lastSelected = this;
             });
 
@@ -225,9 +227,9 @@ define(function(require, exports, module) {
         lastSelected = lastSelected || hours[0];
         startIdx = startIdx || 0;
         if(startIdx > 39) startIdx = 39;
-        this.hoursScroll.scrollview.setPosition(startIdx * 40);
+        this.hoursScroll.scrollview.setPosition(startIdx * 39.8);
         this.gameHourDetails.setContent(lastSelected.content);
-        lastSelected.addClass('selected-hour');
+        lastSelected.addClass('selected');
 
         var dateModifier = new StateModifier({
             align: [0, 0.05]
@@ -239,7 +241,7 @@ define(function(require, exports, module) {
 
         var hoursModifier = new StateModifier({
             align: [0, 0.3],
-            size: [320, 370]
+            size: [undefined, 370]
         });
 
         this.layout.content.add(this.monthDetail);
