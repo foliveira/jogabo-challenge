@@ -3,12 +3,17 @@ define(function(require, exports, module) {
     var Surface = require('famous/core/Surface');
     var Transform = require('famous/core/Transform');
     var RenderNode = require('famous/core/RenderNode');
+
     var StateModifier = require('famous/modifiers/StateModifier');
-    var HeaderFooter = require('famous/views/HeaderFooterLayout');
-    var ImageSurface = require('famous/surfaces/ImageSurface');
-    var FastClick = require('famous/inputs/FastClick');
-    var Utility = require('famous/utilities/Utility');
+
     var ScrollContainer = require('famous/views/ScrollContainer');
+    var HeaderFooter = require('famous/views/HeaderFooterLayout');
+
+    var ImageSurface = require('famous/surfaces/ImageSurface');
+
+    var FastClick = require('famous/inputs/FastClick');
+
+    var Utility = require('famous/utilities/Utility');
 
     var moment = require('moment');
 
@@ -24,7 +29,9 @@ define(function(require, exports, module) {
     PageView.prototype.constructor = PageView;
 
     PageView.DEFAULT_OPTIONS = {
-      headerSize: 44
+      headerSize: 44,
+      backgroundColor: '#20202a',
+      textColor: '#cff700'
     };
 
     function _createLayout() {
@@ -45,7 +52,7 @@ define(function(require, exports, module) {
     function _createHeader() {
         var backgroundSurface = new Surface({
             properties: {
-                backgroundColor: '#20202a'
+                backgroundColor: this.options.backgroundColor
             }
         });
 
@@ -53,28 +60,22 @@ define(function(require, exports, module) {
             transform: Transform.behind
         });
 
-        var arrowSurface = new Surface({
-            size: [44, 44],
-            classes: ['arrow-left-ico'],
-            properties: {
-              color: '#fff'
-            }
+        var arrowSurface = new ImageSurface({
+            content: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSIjZmZmZmZmIj48cGF0aCBkPSJNMTkzLjU2OSA0Ny4yODNsLTE4Mi44NTcgMTgyLjg1OGMtMTQuMjgzIDE0LjI4MS0xNC4yODMgMzcuNDM4IDAgNTEuNzE5bDE4Mi44NTcgMTgyLjg1N2MxNC4yODIgMTQuMjgxIDM3LjQzOCAxNC4yODEgNTEuNzIgMCAxNC4yODMtMTQuMjgxIDE0LjI4My0zNy40MzggMC01MS43MTlsLTEyMC40MjgtMTIwLjQyN2gzNTAuNTY3YzIwLjE5OCAwIDM2LjU3Mi0xNi4zNzMgMzYuNTcyLTM2LjU3MSAwLTIwLjE5OC0xNi4zNzQtMzYuNTcxLTM2LjU3MS0zNi41NzFoLTM1MC41NjhsMTIwLjQyNy0xMjAuNDI3YzcuMTQxLTcuMTQxIDEwLjcxMi0xNi41MDEgMTAuNzEyLTI1Ljg1OXMtMy41Ny0xOC43MTktMTAuNzExLTI1Ljg1OWMtMTQuMjg0LTE0LjI4My0zNy40MzctMTQuMjgzLTUxLjcyLS4wMDF6Ii8+PC9zdmc+",
+            size: [24, 28]
         });
 
         var titleSurface = new Surface({
-            size: [88, 44],
-            content: '<h4>Date & Time</h4>',
+            size: [88, true],
+            content: '<b>Date & Time</b>',
             properties: {
-              color: '#cff700'
+              color: this.options.textColor
             }
         });
 
         var saveSurface = new Surface({
-            size: [44, 44],
-            content: 'save',
-            properties: {
-              color: '#fff'
-            }
+            size: [44, true],
+            content: 'save'
         });
 
         var arrowModifier = new StateModifier({
@@ -89,8 +90,7 @@ define(function(require, exports, module) {
 
         var saveModifier = new StateModifier({
             origin: [1, 0.5],
-            align : [1, 0.5],
-            transform: Transform.translate(0, 20, 0)
+            align : [1, 0.5]
         });
 
       this.layout.header.add(backgroundModifier).add(backgroundSurface);
@@ -100,22 +100,18 @@ define(function(require, exports, module) {
     }
 
     function _createBody() {
-
-
         this.monthDetail = new Surface({
-          content: "<h4>Oct, 14</h4>",
-          size: [undefined, 0],
+          content: "<b>Oct 14</b>",
+          size: [undefined, 20],
           properties: {
-            backgroundColor: "#20202a",
-            color: '#fff'
+            backgroundColor: this.options.backgroundColor
           }
         })
 
         this.dateScroll = new ScrollContainer({
             size : [undefined, 75],
             properties: {
-              backgroundColor: "#20202a",
-              color: '#fff'
+              backgroundColor: this.options.backgroundColor
             },
             scrollview : {
               paginated: true,
@@ -126,37 +122,47 @@ define(function(require, exports, module) {
         var surfaces = [];
         this.dateScroll.sequenceFrom(surfaces);
 
-        for (var i = 0, temp; i < 3; i++) {
+        var self = this;
+        function __createItem(i) {
+            var node = new RenderNode();
+            for(var j = 0; j < 7; ++j)
+            {
+                var modifier = new StateModifier({
+                    transform: Transform.translate(j * (320 / 7), 0, 0)
+                });
+                node.add(modifier).add(new Surface({
+                    content: (j + 1) * i,
+                    size: [10, 50],
+                    properties: {
+                        backgroundColor: self.options.backgroundColor,
+                        textAlign: 'center'
+                    }
+                }));
+            }
 
-            item = new Surface({
-                 content: (i + 1),
-                 size: [undefined, 50],
-                 properties: {
-                     backgroundColor: "#20202a",
-                     textAlign: "center",
-                     color: '#fff'
-                 }
-            });
+            return node;
+        };
 
-            surfaces.push(item);
+        for (var i = 0; i < 3; ++i) {
+            surfaces.push(__createItem(i));
         }
 
         this.gameDayDetails = new Surface({
-          content: moment().format("dddd MMMM Do"),
+          content: moment().format('dddd MMMM Do'),
           size : [undefined, 78],
           properties: {
-            backgroundColor: '#20202a',
-            color: '#cff700',
+            backgroundColor: this.options.backgroundColor,
+            color: this.options.textColor,
             textAlign: 'center'
           },
         });
         this.gameHourDetails = new Surface({
-          content: moment().format("hh:mm A"),
+          content: moment().format('hh:mm A'),
           size : [undefined, 78],
           properties: {
-            backgroundColor: "#20202a",
-            color: '#cff700',
-            textAlign: "center"
+            backgroundColor: this.options.backgroundColor,
+            color: this.options.textColor,
+            textAlign: 'center'
           },
         });
         var gameDayDetailsModifier = new StateModifier({
@@ -171,10 +177,7 @@ define(function(require, exports, module) {
         this.gameDetails.add(gameHourDetailsModifier).add(this.gameHourDetails);
 
         this.hoursScroll = new ScrollContainer({
-            size : [undefined, 370],
-            properties: {
-              backgroundColor: "#fff"
-            },
+            size : [true, true],
             scrollview: {
               direction: Utility.Direction.Y
             }
@@ -184,21 +187,30 @@ define(function(require, exports, module) {
         function __getHours(i) {
           return moment().hour(Math.floor(i/2))
                           .minute(i*30%60)
-                          .format("hh:mm A");
+                          .format('hh:mm A');
           }
 
-        for (var i = 0, temp; i < 48; i++) {
+        var lastSelected = null;
+        var startIdx = 0;
+        for (var i = 0, item; i < 48; ++i) {
 
-            var item = new Surface({
-                 content: __getHours(i),
-                 size: [undefined, 40],
-                 properties: {
-                     backgroundColor: "#fff",
-                     textAlign: "left"
-                 }
+            item = new Surface({
+                content: __getHours(i),
+                size: [undefined, 40],
+                properties: {
+                    color: 'black',
+                    backgroundColor: 'white',
+                    textAlign: 'left'
+                }
             });
+            if(!lastSelected && moment().hour(Math.floor(i/2))
+                            .minute(i*30%60).diff(moment().format()) > 0)
+                            {
+                                lastSelected = item;
+                                startIdx = (function() { return i; })();
+                            }
+
             var self = this;
-            var lastSelected = null;
             item.on('click', function() {
                 self.gameHourDetails.setContent(this.content);
                 this.addClass('selected-hour');
@@ -208,32 +220,33 @@ define(function(require, exports, module) {
             });
 
             item.pipe(this.hoursScroll);
-
             hours.push(item);
         }
+        lastSelected = lastSelected || hours[0];
+        startIdx = startIdx || 0;
+        if(startIdx > 39) startIdx = 39;
+        this.hoursScroll.scrollview.setPosition(startIdx * 40);
+        this.gameHourDetails.setContent(lastSelected.content);
+        lastSelected.addClass('selected-hour');
 
-        var monthDetailModifier = new StateModifier({
-          transform: Transform.translate(0, -15, 0)
-
-        })
         var dateModifier = new StateModifier({
             align: [0, 0.05]
         });
 
         var detailsModifier = new StateModifier({
-            align: [0, 0.15],
-            transform: Transform.translate(0, 0, 0)
+            align: [0, 0.15]
         });
 
         var hoursModifier = new StateModifier({
-            align: [0, 0.05],
-            transform: Transform.translate(0, 120, 0)
+            align: [0, 0.3],
+            size: [320, 370]
         });
 
-        this.layout.content.add(monthDetailModifier).add(this.monthDetail);
+        this.layout.content.add(this.monthDetail);
         this.layout.content.add(dateModifier).add(this.dateScroll);
         this.layout.content.add(detailsModifier).add(this.gameDetails);
         this.layout.content.add(hoursModifier).add(this.hoursScroll);
+
     }
 
     module.exports = PageView;
