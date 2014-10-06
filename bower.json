@@ -1,0 +1,35 @@
+{
+  "name": "jogabo-challenge",
+  "description": "A challenge from the JOGABO guys.",
+  "version": "0.2.0",
+  "homepage": "https://github.com/foliveira/jogabo-challenge",
+  "authors": [
+    {
+      "name": "foliveira",
+      "url": "http://github.com/foliveira/"
+    }
+  ],
+  "main": "app/index.html",
+  "moduleType": [
+    "amd"
+  ],
+  "keywords": [
+    "famo.us"
+  ],
+  "license": "ISC",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "src/lib",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "requirejs": "~2.1.11",
+    "almond": "~0.2.9",
+    "famous-polyfills": "~0.3.0",
+    "famous": "~0.3.0-rc",
+    "moment": "~2.8.3"
+  }
+}
