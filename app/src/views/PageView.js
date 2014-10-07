@@ -10,24 +10,14 @@ define(function(require, exports, module) {
     var HeaderFooter = require('famous/views/HeaderFooterLayout');
 
     var ImageSurface = require('famous/surfaces/ImageSurface');
+
+    var Utility = require('famous/utilities/Utility');
+
+    var moment = require('moment');
+
 /*eslint-disable no-unused-vars */
     var FastClick = require('famous/inputs/FastClick');
 /* eslint-enable no-unused-vars */
-    var Utility = require('famous/utilities/Utility');
-
-    var MouseSync     = require('famous/inputs/MouseSync');
-    var TouchSync     = require('famous/inputs/TouchSync');
-    var ScrollSync    = require('famous/inputs/ScrollSync');
-    var GenericSync   = require('famous/inputs/GenericSync');
-
-    // register any necessary Syncs globally by {SYNC_ID : SYNC_CLASS}
-    GenericSync.register({
-        'mouse'  : MouseSync,
-        'touch'  : TouchSync,
-        'scroll' : ScrollSync
-    });
-
-    var moment = require('moment');
 
     function _createLayout() {
       this.layout = new HeaderFooter({
@@ -95,17 +85,6 @@ define(function(require, exports, module) {
     }
 
     function _createBody() {
-        var self = this;
-
-        // create a sync from the registered SYNC_IDs
-        // here we define default options for `mouse` and `touch` while
-        // scrolling sensitivity is scaled down
-        var sync = new GenericSync({
-            'mouse'  : {},
-            'touch'  : {},
-            'scroll' : {scale : .5}
-        });
-
         this.monthDetail = new Surface({
           content: '<b>Oct 14</b>',
           size: [undefined, 20],
@@ -123,35 +102,32 @@ define(function(require, exports, module) {
             scrollview : {
               paginated: true,
               groupScroll: true,
-              direction: Utility.Direction.X
+              direction: Utility.Direction.X,
             }
         });
-
         var surfaces = [];
         this.dateScroll.sequenceFrom(surfaces);
-        this.dateScroll.pipe(sync);
+
+        var self = this;
 
         function __createItem(i) {
-            var node = new RenderNode();
-            for (var j = 0; j < 7; ++j) {
-                var modifier = new StateModifier({
-                    transform: Transform.translate(j * (320 / 7), 0, 0)
-                });
-                node.add(modifier).add(new Surface({
-                    content: (j * i) * (j + i),
-                    size: [10, 50],
-                    properties: {
-                        backgroundColor: self.options.backgroundColor,
-                        textAlign: 'center'
-                    }
-                }));
-            }
+            var node = new Surface({ content: (i + 1)});
 
             return node;
         }
 
-        for (var i = 0; i < 3; ++i)
+        for (var i = 0; i < 5; ++i)
             surfaces.push(__createItem(i));
+
+        this.dateScroll.on('pageChange', function(data) {
+            if(data.direction == 1) { //To the RIGHT!
+                surfaces.push(__createItem(surfaces.length));
+                surfaces.shift();
+            } else { //To the LEFT!
+                surfaces.unshift(__createItem(5 - surfaces.length - 2));
+                surfaces.pop();
+            }
+        })
 
         this.gameDayDetails = new Surface({
           content: moment().format('dddd MMMM Do'),
@@ -185,7 +161,8 @@ define(function(require, exports, module) {
         this.hoursScroll = new ScrollContainer({
             size : [undefined, true],
             scrollview: {
-              direction: Utility.Direction.Y
+              direction: Utility.Direction.Y,
+              edgeGrip : 1
             }
         });
         var hours = [];
