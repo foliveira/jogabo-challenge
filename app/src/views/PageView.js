@@ -136,8 +136,7 @@ define(function(require, exports, module) {
 /*eslint-enable no-wrap-func */
 
         var dateModifier = new StateModifier({
-            align: [0, 0.05],
-            transform: Transform.inFront
+            align: [0, 0.05]
         });
 
         var detailsModifier = new StateModifier({

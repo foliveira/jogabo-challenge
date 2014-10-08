@@ -49,9 +49,9 @@ define(function(require, exports, module) {
 
 /*eslint-disable no-wrap-func */
       //delay firing this event so we can register at the main view and catch it
-      //setTimeout((function() {
+      setTimeout((function() {
         this._eventOutput.emit('selected', { content: this.lastSelected.content });
-      //}).bind(this));
+      }).bind(this));
 /*eslint-enable no-wrap-func */
     }
 
