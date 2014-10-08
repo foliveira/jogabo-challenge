@@ -62,7 +62,7 @@ define(function(require, exports, module) {
           hour = new Surface({
               content: __getHours.call(this, k),
               size: [undefined, 40],
-              classes: ['day'],
+              classes: ['hour'],
               properties: {
                   color: 'black',
                   backgroundColor: 'white',

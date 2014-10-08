@@ -12,14 +12,14 @@ div {
 }
 
 .day.selected {
-  background-color: #cff700 !important
+
 }
 
 .hour.selected {
-
+  background-color: #cff700 !important;
 }
 
-.hour, .day {
+.hour {
   padding: 10px;
 }
 

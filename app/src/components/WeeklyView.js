@@ -43,6 +43,7 @@ define(function(require, exports, module) {
         View.apply(this, arguments);
 
         this.weekIndex = index;
+        this.size = [undefined, 75];
 
         _createLayout.call(this);
         _createElements.call(this);
@@ -52,9 +53,10 @@ define(function(require, exports, module) {
     WeeklyView.prototype.constructor = WeeklyView;
 
     WeeklyView.DEFAULT_OPTIONS = {
-      size: [undefined, 75],
-      backgroundColor: '#20202a',
-      textColor: '#cff700'
+      properties: {
+        backgroundColor: '#20202a',
+        color: '#cff700'
+      }
     };
 
     module.exports = WeeklyView;

@@ -44,6 +44,11 @@ define(function(require, exports, module) {
         ScrollContainer.apply(this, arguments);
 
         this.weeks = [];
+        this.size = [undefined, 75];
+
+        this.scrollview.paginated = true;
+        this.scrollview.groupScroll = true;
+        this.scrollview.direction = Utility.Direction.X;
 
         _createElements.call(this);
     }
@@ -52,14 +57,9 @@ define(function(require, exports, module) {
     WeeksScroller.prototype.constructor = WeeksScroller;
 
     WeeksScroller.DEFAULT_OPTIONS = {
-      size : [undefined, 75],
+      numberOfWeeks: 5,
       properties: {
         backgroundColor: '#20202a'
-      },
-      scrollview : {
-        paginated: true,
-        groupScroll: true,
-        direction: Utility.Direction.X
       }
     };
 
