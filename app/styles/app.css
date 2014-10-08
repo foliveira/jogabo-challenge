@@ -1,18 +1,22 @@
 html {
-    font: 15px/1.3 "Helvetica Neue", sans-serif
+  font: 15px/1.3 "Helvetica Neue", sans-serif
 }
 
 body, html {
-    height: 100%;
-    background-color: #20202a
+  height: 100%;
+  background-color: #20202a
 }
 
 div {
-    color: #fff
+  color: #fff
 }
 
-.selected {
-    background-color: #cff700 !important
+.day.selected {
+  background-color: #cff700 !important
+}
+
+.hour.selected {
+
 }
 
 .hour, .day {
@@ -24,5 +28,5 @@ div {
 }
 
 .circle-ico {
-    background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsPSIjZmZmZmZmIj48cGF0aCBkPSJNMCAyNTZhMjU2IDI1NiA0NjgwIDEgMSA1MTIgMCAyNTYgMjU2IDQ2ODAgMSAxLTUxMiAweiIvPjwvc3ZnPg==);
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsPSIjZmZmZmZmIj48cGF0aCBkPSJNMCAyNTZhMjU2IDI1NiA0NjgwIDEgMSA1MTIgMCAyNTYgMjU2IDQ2ODAgMSAxLTUxMiAweiIvPjwvc3ZnPg==);
 }

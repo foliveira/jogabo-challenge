@@ -1,29 +1,30 @@
 define(function(require, exports, module) {
+    'use strict';
+
     var View = require('famous/core/View');
     var Surface = require('famous/core/Surface');
     var Transform = require('famous/core/Transform');
     var RenderNode = require('famous/core/RenderNode');
-
     var StateModifier = require('famous/modifiers/StateModifier');
-
-    var ScrollContainer = require('famous/views/ScrollContainer');
     var HeaderFooter = require('famous/views/HeaderFooterLayout');
-
     var ImageSurface = require('famous/surfaces/ImageSurface');
-
-    var Utility = require('famous/utilities/Utility');
-
+    var HoursScroll = require('components/HoursScroll');
+    var WeeksScroller = require('components/WeeksScroller');
     var moment = require('moment');
 
 /*eslint-disable no-unused-vars */
     var FastClick = require('famous/inputs/FastClick');
 /* eslint-enable no-unused-vars */
 
+    function __setMonthChangedListner(data) {
+      this.monthDetail.setContent('<br>' + data.text + '</br>');
+    }
+
     function _createLayout() {
       this.layout = new HeaderFooter({
         headerSize: this.options.headerSize,
             properties: {
-                backgroundColor: '#20202a'
+                backgroundColor: this.options.backgroundColor
             }
       });
 
@@ -94,40 +95,8 @@ define(function(require, exports, module) {
           }
         });
 
-        this.dateScroll = new ScrollContainer({
-            size : [undefined, 75],
-            properties: {
-              backgroundColor: this.options.backgroundColor
-            },
-            scrollview : {
-              paginated: true,
-              groupScroll: true,
-              direction: Utility.Direction.X,
-            }
-        });
-        var surfaces = [];
-        this.dateScroll.sequenceFrom(surfaces);
-
-        var self = this;
-
-        function __createItem(i) {
-            var node = new Surface({ content: (i + 1)});
-
-            return node;
-        }
-
-        for (var i = 0; i < 5; ++i)
-            surfaces.push(__createItem(i));
-
-        this.dateScroll.on('pageChange', function(data) {
-            if(data.direction == 1) { //To the RIGHT!
-                surfaces.push(__createItem(surfaces.length));
-                surfaces.shift();
-            } else { //To the LEFT!
-                surfaces.unshift(__createItem(5 - surfaces.length - 2));
-                surfaces.pop();
-            }
-        })
+        this.dateScroll = new WeeksScroller();
+        this.dateScroll.on('monthChanged', __setMonthChangedListner.bind(this));
 
         this.gameDayDetails = new Surface({
           content: moment().format('dddd MMMM Do'),
@@ -158,65 +127,17 @@ define(function(require, exports, module) {
         this.gameDetails.add(gameDayDetailsModifier).add(this.gameDayDetails);
         this.gameDetails.add(gameHourDetailsModifier).add(this.gameHourDetails);
 
-        this.hoursScroll = new ScrollContainer({
-            size : [undefined, true],
-            scrollview: {
-              direction: Utility.Direction.Y,
-              edgeGrip : 1
-            }
-        });
-        var hours = [];
-        this.hoursScroll.sequenceFrom(hours);
-        function __getHours(i) {
-          return moment().hour(Math.floor(i/2))
-                          .minute(i*30%60)
-                          .format('hh:mm A');
-          }
+        this.hoursScroll = new HoursScroll();
 
-        var lastSelected = null;
-        var startIdx = 0;
-        for (var k = 0, item; k < 48; ++k) {
-
-            item = new Surface({
-                content: __getHours(k),
-                size: [undefined, 40],
-                classes: ['hour'],
-                properties: {
-                    color: 'black',
-                    backgroundColor: 'white',
-                    textAlign: 'left'
-                }
-            });
-            if (!lastSelected && moment().hour(Math.floor(k/2))
-                                          .minute(k*30%60)
-                                          .diff(moment().format()) > 0) {
-                                lastSelected = item;
-
-                                startIdx = (function(idx) {
-                                              return idx;
-                                            })(k);
-                            }
-
-            item.on('click', function() {
-                self.gameHourDetails.setContent(this.content);
-                this.addClass('selected');
-                if (lastSelected)
-                  lastSelected.removeClass('selected');
-                lastSelected = this;
-            });
-
-            item.pipe(this.hoursScroll);
-            hours.push(item);
-        }
-        lastSelected = lastSelected || hours[0];
-        startIdx = startIdx || 0;
-        if (startIdx > 39) startIdx = 39;
-        this.hoursScroll.scrollview.setPosition(startIdx * 39.8);
-        this.gameHourDetails.setContent(lastSelected.content);
-        lastSelected.addClass('selected');
+/*eslint-disable no-wrap-func */
+        this.hoursScroll.on('selected', (function(text) {
+          this.gameHourDetails.setContent(text.content);
+        }).bind(this));
+/*eslint-enable no-wrap-func */
 
         var dateModifier = new StateModifier({
-            align: [0, 0.05]
+            align: [0, 0.05],
+            transform: Transform.inFront
         });
 
         var detailsModifier = new StateModifier({
