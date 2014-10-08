@@ -6,3 +6,5 @@ before_install:
   - if [ "$currentfolder" != 'generator-famous' ]; then cd .. && eval "mv $currentfolder generator-famous" && cd generator-famous; fi
   - npm install -g grunt-cli bower
 
+notifications:
+  email: false  
