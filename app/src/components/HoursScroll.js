@@ -34,7 +34,7 @@ define(function(require, exports, module) {
       }).bind(this));
 /*eslint-enable no-wrap-func */
 
-      h.pipe(this);
+      h.pipe(this._eventOutput);
     }
 
     function __setSelectedHour() {
@@ -47,12 +47,12 @@ define(function(require, exports, module) {
       this.scrollview.setPosition(this.startIdx * 39.8);
       this.lastSelected.addClass('selected');
 
-/*eslint-disable no-wrap-func */
+      /*eslint-disable no-wrap-func */
       //delay firing this event so we can register at the main view and catch it
       setTimeout((function() {
         this._eventOutput.emit('selected', { content: this.lastSelected.content });
       }).bind(this));
-/*eslint-enable no-wrap-func */
+      /*eslint-enable no-wrap-func */
     }
 
     function _createElements() {

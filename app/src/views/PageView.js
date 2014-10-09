@@ -10,14 +10,16 @@ define(function(require, exports, module) {
     var ImageSurface = require('famous/surfaces/ImageSurface');
     var HoursScroll = require('components/HoursScroll');
     var WeeksScroller = require('components/WeeksScroller');
+    var Utility = require('famous/utilities/Utility');
     var moment = require('moment');
 
 /*eslint-disable no-unused-vars */
     var FastClick = require('famous/inputs/FastClick');
 /* eslint-enable no-unused-vars */
 
-    function __setMonthChangedListner(data) {
-      this.monthDetail.setContent('<br>' + data.text + '</br>');
+    function __dateChangedListner(d) {
+      this.gameDayDetails.setContent(d.date.format('dddd MMMM Do'));
+      this.monthDetail.setContent(d.date.format('MMM YY'));
     }
 
     function _createLayout() {
@@ -53,7 +55,8 @@ define(function(require, exports, module) {
 
         var titleSurface = new Surface({
             size: [88, true],
-            content: '<b>Date & Time</b>',
+            content: 'Date & Time',
+            classes: ['bolder'],
             properties: {
               color: this.options.textColor
             }
@@ -61,7 +64,7 @@ define(function(require, exports, module) {
 
         var saveSurface = new Surface({
             size: [44, true],
-            content: 'save'
+            content: 'Save'
         });
 
         var arrowModifier = new StateModifier({
@@ -87,16 +90,27 @@ define(function(require, exports, module) {
 
     function _createBody() {
         this.monthDetail = new Surface({
-          content: '<b>Oct 14</b>',
+          content: 'Oct 14',
           size: [undefined, 20],
-          classes: ['month'],
+          classes: ['month', 'bolder'],
           properties: {
             backgroundColor: this.options.backgroundColor
           }
         });
 
-        this.dateScroll = new WeeksScroller();
-        this.dateScroll.on('monthChanged', __setMonthChangedListner.bind(this));
+        this.dateScroll = new WeeksScroller({
+          size: [undefined, 75],
+          scrollview: {
+            paginated: true,
+            groupScroll: true,
+            direction: Utility.Direction.X
+          },
+          properties: {
+            backgroundColor: '#20202a'
+          }
+        });
+        this.dateScroll.on('day-selected', __dateChangedListner.bind(this));
+        this.dateScroll.on('week-changed', __dateChangedListner.bind(this));
 
         this.gameDayDetails = new Surface({
           content: moment().format('dddd MMMM Do'),
@@ -129,11 +143,11 @@ define(function(require, exports, module) {
 
         this.hoursScroll = new HoursScroll();
 
-/*eslint-disable no-wrap-func */
+        /*eslint-disable no-wrap-func */
         this.hoursScroll.on('selected', (function(text) {
           this.gameHourDetails.setContent(text.content);
         }).bind(this));
-/*eslint-enable no-wrap-func */
+        /*eslint-enable no-wrap-func */
 
         var dateModifier = new StateModifier({
             align: [0, 0.05]
