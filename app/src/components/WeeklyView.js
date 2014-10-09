@@ -9,6 +9,19 @@ define(function(require, exports, module) {
 
     var DaySurface = require('components/DaySurface');
 
+    var moment = require('moment');
+
+    function __setListenersOn(d) {
+      /*eslint-disable no-wrap-func */
+      d.on('click', (function() {
+          this.lastSelected = d;
+          this._eventOutput.emit('day-selected', { date: d.date });
+      }).bind(this));
+      /*eslint-enable no-wrap-func */
+
+      d.pipe(this._eventOutput);
+    }
+
     function _createLayout() {
       this.layout = new SequentialLayout({
         direction: Utility.Direction.X,
@@ -29,9 +42,13 @@ define(function(require, exports, module) {
       this.days = [];
 
       for (var i = 0; i < 7; ++i) {
-        var day = new DaySurface((7 * this.weekIndex) + i);
+        var dayIndex = (7 * this.weekIndex) + i;
+        var day = new DaySurface(dayIndex);
 
-        day.pipe(this);
+        __setListenersOn.call(this, day);
+
+        if (moment().day() === day.date.day())
+          this.lastSelected = day;
 
         this.days.push(day);
       }
@@ -39,11 +56,10 @@ define(function(require, exports, module) {
       this.layout.sequenceFrom(this.days);
     }
 
-    function WeeklyView(index) {
-        View.apply(this, arguments);
+    function WeeklyView(index, options) {
+        View.apply(this, options);
 
         this.weekIndex = index;
-        this.size = [undefined, 75];
 
         _createLayout.call(this);
         _createElements.call(this);
@@ -51,13 +67,6 @@ define(function(require, exports, module) {
 
     WeeklyView.prototype = Object.create(View.prototype);
     WeeklyView.prototype.constructor = WeeklyView;
-
-    WeeklyView.DEFAULT_OPTIONS = {
-      properties: {
-        backgroundColor: '#20202a',
-        color: '#cff700'
-      }
-    };
 
     module.exports = WeeklyView;
 });
